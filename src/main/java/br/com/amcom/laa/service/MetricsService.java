@@ -136,7 +136,7 @@ public class MetricsService extends EsConnection {
 
         String strDate = getStrDate(day, week, year);
 
-        if (DateUtil.isValidDate(strDate)) {
+        if (!DateUtil.isValidDate(strDate)) {
             throw new InvalidDateException();
         }
 
