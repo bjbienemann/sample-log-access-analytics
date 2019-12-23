@@ -34,9 +34,4 @@ public class HealthTest extends JerseyTest {
         Response response = target("laaa/health").request().get();
         Assert.assertEquals("all is good 200", Response.Status.OK.getStatusCode(), response.getStatus());
     }
-
-    @Test
-    public void indexTest() {
-
-    }
 }
