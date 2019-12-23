@@ -3,7 +3,6 @@ package br.com.amcom.laa.service;
 import br.com.amcom.laa.connection.EsConnection;
 import br.com.amcom.laa.domain.Log;
 import br.com.amcom.laa.exception.ElasticSearchClientException;
-import br.com.amcom.laa.exception.ResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchException;

@@ -11,6 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InjestTest {
 
+    private static final String CREATED = "created";
+    private static final String UPDATED = "updated";
+
     private InjestService injestService;
     private LogMock logMock;
 
@@ -25,7 +28,7 @@ public class InjestTest {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl1());
 
         assertThat(response).isNotNull();
-        assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+        assertThat(response.getResult().getLowercase()).isIn(CREATED, UPDATED);
     }
 
     @Test
@@ -33,7 +36,7 @@ public class InjestTest {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl2());
 
         assertThat(response).isNotNull();
-        assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+        assertThat(response.getResult().getLowercase()).isIn(CREATED, UPDATED);
     }
 
     @Test
@@ -41,7 +44,7 @@ public class InjestTest {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl3());
 
         assertThat(response).isNotNull();
-        assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+        assertThat(response.getResult().getLowercase()).isIn(CREATED, UPDATED);
     }
 
     @Test @Ignore

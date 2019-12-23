@@ -2,7 +2,6 @@ package br.com.amcom.laa.service;
 
 import br.com.amcom.laa.connection.EsConnection;
 import br.com.amcom.laa.exception.ElasticSearchClientException;
-import br.com.amcom.laa.exception.ResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
@@ -22,7 +21,7 @@ public class HealthService extends EsConnection {
 
     public ClusterHealthResponse getHealth() {
         ClusterHealthRequest request = new ClusterHealthRequest(INDEX);
-        request.timeout(TimeValue.timeValueSeconds(50));
+        request.timeout(TimeValue.timeValueSeconds(DURATION));
         request.waitForYellowStatus();
         try {
             return openConnection().cluster().health(request, RequestOptions.DEFAULT);

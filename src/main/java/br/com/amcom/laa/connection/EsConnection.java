@@ -14,6 +14,7 @@ public class EsConnection {
     private static final int PORT_TWO = 9300;
     private static final String SCHEME = "http";
     protected static final String INDEX = "laa";
+    protected static final int DURATION = 60;
 
     private RestHighLevelClient restHighLevelClient;
 

@@ -35,6 +35,11 @@ public class MetricsService extends EsConnection {
     private static final Logger LOGGER = LogManager.getLogger(MetricsService.class);
 
     private static final String TOP_3_URLS = "top3_urls";
+    private static final String URL = "url";
+    private static final String DATE_TIME = "dateTime";
+    private static final String REGION_CODE = "regionCode";
+    private static final String COUNT = "_count";
+    private static final int ZERO = 0;
 
     public List<Access> getTop3World() {
         SearchResponse searchResponse = searchTop3World();
@@ -47,9 +52,9 @@ public class MetricsService extends EsConnection {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(termsAggregationBuilder);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.size(0);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.from(ZERO);
+        searchSourceBuilder.size(ZERO);
+        searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
@@ -75,11 +80,11 @@ public class MetricsService extends EsConnection {
         TermsAggregationBuilder termsAggregationBuilder = getTermsAggregationBuilder(3, Boolean.FALSE);
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.termQuery("regionCode", regionCode));
+        searchSourceBuilder.query(QueryBuilders.termQuery(REGION_CODE, regionCode));
         searchSourceBuilder.aggregation(termsAggregationBuilder);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.size(0);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.from(ZERO);
+        searchSourceBuilder.size(ZERO);
+        searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
@@ -106,9 +111,9 @@ public class MetricsService extends EsConnection {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(termsAggregationBuilder);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.size(0);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.from(ZERO);
+        searchSourceBuilder.size(ZERO);
+        searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
@@ -154,15 +159,15 @@ public class MetricsService extends EsConnection {
         TermsAggregationBuilder termsAggregationBuilder = getTermsAggregationBuilder(3, Boolean.FALSE);
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.rangeQuery("dateTime")
+        searchSourceBuilder.query(QueryBuilders.rangeQuery(DATE_TIME)
                 .gte(strDate)
                 .lte(strDate)
                 .format(DateUtil.DD_MM_YYYY));
 
         searchSourceBuilder.aggregation(termsAggregationBuilder);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.size(0);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.from(ZERO);
+        searchSourceBuilder.size(ZERO);
+        searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
@@ -178,6 +183,31 @@ public class MetricsService extends EsConnection {
         }
     }
 
+    private List<Access> aggsTermsToAccess(SearchResponse searchResponse) {
+        if(Objects.isNull(searchResponse) || Objects.isNull(searchResponse.getAggregations())) {
+            throw new NoRecordsFoundExcepetion();
+        }
+
+        Map<String, Aggregation> aggregationMap = searchResponse.getAggregations().getAsMap();
+        if (!aggregationMap.containsKey(MetricsService.TOP_3_URLS)) {
+            throw new NoRecordsFoundExcepetion();
+        }
+
+        List<? extends Terms.Bucket> top3World = ((Terms) aggregationMap.get(MetricsService.TOP_3_URLS)).getBuckets();
+        return top3World.stream().map(this::termsToAccess).collect(Collectors.toList());
+    }
+
+    private Access termsToAccess(Terms.Bucket bucket) {
+        return new Access(bucket.getKeyAsString(), bucket.getDocCount());
+    }
+
+    private TermsAggregationBuilder getTermsAggregationBuilder(Integer size, Boolean asc) {
+        return AggregationBuilders.terms(TOP_3_URLS)
+                .field(URL)
+                .size(size)
+                .order(BucketOrder.aggregation(COUNT, asc));
+    }
+
     public List<Access> getMinuteMoreAccess() {
         SearchResponse searchResponse = searchMinuteMoreAccess();
 
@@ -189,9 +219,9 @@ public class MetricsService extends EsConnection {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(dateHistogramAggregationBuilder);
-        searchSourceBuilder.from(0);
-        searchSourceBuilder.size(0);
-        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        searchSourceBuilder.from(ZERO);
+        searchSourceBuilder.size(ZERO);
+        searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(INDEX);
@@ -223,38 +253,13 @@ public class MetricsService extends EsConnection {
         return new Access(bucket.getKeyAsString(), bucket.getDocCount());
     }
 
-    private List<Access> aggsTermsToAccess(SearchResponse searchResponse) {
-        if(Objects.isNull(searchResponse) || Objects.isNull(searchResponse.getAggregations())) {
-            throw new NoRecordsFoundExcepetion();
-        }
-
-        Map<String, Aggregation> aggregationMap = searchResponse.getAggregations().getAsMap();
-        if (!aggregationMap.containsKey(MetricsService.TOP_3_URLS)) {
-            throw new NoRecordsFoundExcepetion();
-        }
-
-        List<? extends Terms.Bucket> top3World = ((Terms) aggregationMap.get(MetricsService.TOP_3_URLS)).getBuckets();
-        return top3World.stream().map(this::termsToAccess).collect(Collectors.toList());
-    }
-
-    private Access termsToAccess(Terms.Bucket bucket) {
-        return new Access(bucket.getKeyAsString(), bucket.getDocCount());
-    }
-
-    private TermsAggregationBuilder getTermsAggregationBuilder(Integer size, Boolean asc) {
-        return AggregationBuilders.terms(TOP_3_URLS)
-                .field("url")
-                .size(size)
-                .order(BucketOrder.aggregation("_count", asc));
-    }
-
     private DateHistogramAggregationBuilder getDateHistogramAggregationBuilder() {
         return AggregationBuilders
                 .dateHistogram(TOP_3_URLS)
-                .field("dateTime")
+                .field(DATE_TIME)
                 .fixedInterval(DateHistogramInterval.MINUTE)
                 .format("yyyy-MM-dd:HH.mm")
                 .minDocCount(1)
-                .order(BucketOrder.aggregation("_count", false));
+                .order(BucketOrder.aggregation(COUNT, Boolean.FALSE));
     }
 }
