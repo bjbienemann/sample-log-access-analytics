@@ -6,15 +6,15 @@
 * Maven 3.3+
 * ElasticSearch 7.5.1
 
-### Testar
-
-Maven:
-<pre><code>./mvn test</code></pre>
-
 ### Executar
 
 Maven:
 <pre><code>./mvn jetty:run</code></pre>
+
+### Testar
+
+Maven:
+<pre><code>./mvn test</code></pre>
 
 ### Instalar
 

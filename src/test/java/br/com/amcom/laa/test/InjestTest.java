@@ -20,7 +20,7 @@ public class InjestTest {
         this.logMock = new LogMock();
     }
 
-    @Test @Ignore
+    @Test
     public void newIndex1() {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl1());
 
@@ -28,7 +28,7 @@ public class InjestTest {
         assertThat(response.getResult().getLowercase()).isIn("created", "updated");
     }
 
-    @Test @Ignore
+    @Test
     public void newIndex2() {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl2());
 
@@ -36,7 +36,7 @@ public class InjestTest {
         assertThat(response.getResult().getLowercase()).isIn("created", "updated");
     }
 
-    @Test @Ignore
+    @Test
     public void newIndex3() {
         IndexResponse response = injestService.newIndexRequest(logMock.createUrl3());
 
@@ -44,7 +44,8 @@ public class InjestTest {
         assertThat(response.getResult().getLowercase()).isIn("created", "updated");
     }
 
-    @Test
+    @Test @Ignore
+    // insert data mocked
     public void newRandonIndex() {
         for (int i = 0; i < 100; i++) {
             injestService.newIndexRequest(logMock.createUrl());
