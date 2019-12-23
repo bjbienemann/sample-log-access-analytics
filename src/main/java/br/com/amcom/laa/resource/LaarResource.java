@@ -1,6 +1,7 @@
 package br.com.amcom.laa.resource;
 
 import br.com.amcom.laa.domain.Log;
+import br.com.amcom.laa.exception.ElasticSearchClientException;
 import br.com.amcom.laa.service.InjestService;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.rest.RestStatus;
@@ -18,8 +19,11 @@ public class LaarResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response postIngest(Log log) {
         InjestService injestService = new InjestService();
-        IndexResponse response = injestService.newIndexRequest(log);
-
-        return Response.status(response.status().getStatus()).build();
+        try {
+            IndexResponse response = injestService.newIndexRequest(log);
+            return Response.status(response.status().getStatus()).build();
+        } catch (ElasticSearchClientException e) {
+            return e.getResponse();
+        }
     }
 }

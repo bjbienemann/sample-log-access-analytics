@@ -26,9 +26,8 @@ import java.util.stream.Collectors;
 public class MetricsService extends EsConnection {
 
     private static final Logger LOGGER = LogManager.getLogger(MetricsService.class);
-    private static final String INDEX = "laa";
 
-    public static final String TOP_3_URLS = "top3_urls";
+    private static final String TOP_3_URLS = "top3_urls";
 
     public List<Access> getTop3World() throws ElasticSearchClientException {
         SearchResponse searchResponse = searchTop3World();
@@ -54,6 +53,8 @@ public class MetricsService extends EsConnection {
         } catch (java.io.IOException e){
             LOGGER.error(e.getLocalizedMessage(), e);
             throw new ElasticSearchClientException(e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -63,7 +64,7 @@ public class MetricsService extends EsConnection {
         return aggsToAccess(searchResponse);
     }
 
-    public SearchResponse searchTop3Region(Integer regionCode) {
+    private SearchResponse searchTop3Region(Integer regionCode) {
         TermsAggregationBuilder termsAggregationBuilder = getTermsAggregationBuilder(3, Boolean.FALSE);
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -82,6 +83,8 @@ public class MetricsService extends EsConnection {
         } catch (java.io.IOException e){
             LOGGER.error(e.getLocalizedMessage(), e);
             throw new ElasticSearchClientException(e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -91,7 +94,7 @@ public class MetricsService extends EsConnection {
         return aggsToAccess(searchResponse);
     }
 
-    public SearchResponse searchLessWorld() throws ElasticSearchClientException {
+    private SearchResponse searchLessWorld() throws ElasticSearchClientException {
         TermsAggregationBuilder termsAggregationBuilder = getTermsAggregationBuilder(1, Boolean.TRUE);
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -109,6 +112,8 @@ public class MetricsService extends EsConnection {
         } catch (java.io.IOException e){
             LOGGER.error(e.getLocalizedMessage(), e);
             throw new ElasticSearchClientException(e);
+        } finally {
+            closeConnection();
         }
     }
 
