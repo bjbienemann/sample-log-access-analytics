@@ -3,21 +3,23 @@ package br.com.amcom.laa.domain;
 public class Error {
 
     private String message;
-    private String exception;
+
+    private String rootCauseMessage;
+
+    public Error(String message) {
+        this.message = message;
+    }
+
+    public Error(String message, String exception) {
+        this.message = message;
+        this.rootCauseMessage = exception;
+    }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getException() {
-        return exception;
-    }
-
-    public void setException(String exception) {
-        this.exception = exception;
+    public String getRootCauseMessage() {
+        return rootCauseMessage;
     }
 }

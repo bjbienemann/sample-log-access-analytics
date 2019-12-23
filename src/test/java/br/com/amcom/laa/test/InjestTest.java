@@ -1,37 +1,53 @@
 package br.com.amcom.laa.test;
 
-import br.com.amcom.laa.domain.Log;
+import br.com.amcom.laa.mock.LogMock;
 import br.com.amcom.laa.service.InjestService;
 import org.elasticsearch.action.index.IndexResponse;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InjestTest {
 
     private InjestService injestService;
+    private LogMock logMock;
 
     @Before
     public void init() {
         this.injestService = new InjestService();
+        this.logMock = new LogMock();
     }
 
-    @Test
-    public void newIndexText() {
-        Date dateTime = new Date(1037825323957L);
-
-        Log log = new Log();
-        log.setUrl("/pets/exotic/cats/10");
-        log.setDateTime(dateTime);
-        log.setUuid("5b019db5-b3d0-46d2-9963-437860af707f");
-        log.setRegionCode(1);
-
-        IndexResponse response = injestService.newIndexRequest(log);
+    @Test @Ignore
+    public void newIndex1() {
+        IndexResponse response = injestService.newIndexRequest(logMock.createUrl1());
 
         assertThat(response).isNotNull();
         assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+    }
+
+    @Test @Ignore
+    public void newIndex2() {
+        IndexResponse response = injestService.newIndexRequest(logMock.createUrl2());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+    }
+
+    @Test @Ignore
+    public void newIndex3() {
+        IndexResponse response = injestService.newIndexRequest(logMock.createUrl3());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getResult().getLowercase()).isIn("created", "updated");
+    }
+
+    @Test
+    public void newRandonIndex() {
+        for (int i = 0; i < 100; i++) {
+            injestService.newIndexRequest(logMock.createUrl());
+        }
     }
 }

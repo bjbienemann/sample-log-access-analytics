@@ -3,6 +3,7 @@ package br.com.amcom.laa.service;
 import br.com.amcom.laa.connection.EsConnection;
 import br.com.amcom.laa.domain.Log;
 import br.com.amcom.laa.exception.ElasticSearchClientException;
+import br.com.amcom.laa.exception.ResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchException;
@@ -17,7 +18,7 @@ public class InjestService extends EsConnection {
 
     private static final Logger LOGGER = LogManager.getLogger(InjestService.class);
 
-    public IndexResponse newIndexRequest(Log log) throws ElasticSearchClientException {
+    public IndexResponse newIndexRequest(Log log) {
         IndexRequest request = new IndexRequest(INDEX);
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("url", log.getUrl());
