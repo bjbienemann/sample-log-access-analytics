@@ -1,6 +1,9 @@
 package br.com.amcom.laa.resource;
 
 import br.com.amcom.laa.domain.Log;
+import br.com.amcom.laa.service.InjestService;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.rest.RestStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +17,9 @@ public class LaarResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response postIngest(Log log) {
-        return Response.serverError().build();
+        InjestService injestService = new InjestService();
+        IndexResponse response = injestService.newIndexRequest(log);
+
+        return Response.status(response.status().getStatus()).build();
     }
 }

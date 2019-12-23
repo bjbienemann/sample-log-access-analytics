@@ -1,10 +1,13 @@
 package br.com.amcom.laa.domain;
 
+import javax.json.bind.annotation.JsonbDateFormat;
 import java.util.Date;
+
 
 public class Log {
 
     private String url;
+    @JsonbDateFormat(JsonbDateFormat.TIME_IN_MILLIS)
     private Date dateTime;
     private String uuid;
     private Integer regionCode;
