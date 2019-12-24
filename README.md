@@ -6,6 +6,16 @@
 * Maven 3.3+
 * ElasticSearch 7.5.1
 
+### Configuração
+
+/src/main/resources/EsConnection.properties
+
+<pre><code>es.host=localhost
+es.port.one=9200
+es.port.two=9300
+es.scheme=http
+es.index=laa</code></pre>
+
 ### Executar
 
 Maven:
@@ -17,6 +27,8 @@ Maven:
 <pre><code>./mvn test</code></pre>
 
 ### Instalar
+
+...
 
 ### Especificação
 

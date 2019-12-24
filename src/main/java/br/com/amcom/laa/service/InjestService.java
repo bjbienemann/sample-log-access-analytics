@@ -18,7 +18,7 @@ public class InjestService extends EsConnection {
     private static final Logger LOGGER = LogManager.getLogger(InjestService.class);
 
     public IndexResponse newIndexRequest(Log log) {
-        IndexRequest request = new IndexRequest(INDEX);
+        IndexRequest request = new IndexRequest(getIndex());
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("url", log.getUrl());
         dataMap.put("dateTime", log.getDateTime());

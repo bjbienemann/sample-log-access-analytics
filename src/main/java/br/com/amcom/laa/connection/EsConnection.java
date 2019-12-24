@@ -1,5 +1,6 @@
 package br.com.amcom.laa.connection;
 
+import br.com.amcom.laa.constants.EsConstants;
 import br.com.amcom.laa.exception.ElasticSearchClientException;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -9,11 +10,6 @@ import java.io.IOException;
 
 public class EsConnection {
 
-    private static final String HOST = "localhost";
-    private static final int PORT_ONE = 9200;
-    private static final int PORT_TWO = 9300;
-    private static final String SCHEME = "http";
-    protected static final String INDEX = "laa";
     protected static final int DURATION = 60;
 
     private RestHighLevelClient restHighLevelClient;
@@ -22,8 +18,8 @@ public class EsConnection {
         if(restHighLevelClient == null) {
             restHighLevelClient = new RestHighLevelClient(
                     RestClient.builder(
-                            new HttpHost(HOST, PORT_ONE, SCHEME),
-                            new HttpHost(HOST, PORT_TWO, SCHEME)));
+                            new HttpHost(getHost(), getPortOne(), getScheme()),
+                            new HttpHost(getHost(), getPortTwo(), getScheme())));
         }
 
         return restHighLevelClient;
@@ -42,5 +38,27 @@ public class EsConnection {
 
     public RestHighLevelClient getRestHighLevelClient() {
         return restHighLevelClient;
+    }
+
+    private String getHost() {
+        return System.getProperty(EsConstants.ES_HOST);
+    }
+
+    private Integer getPortOne() {
+        String property = System.getProperty(EsConstants.ES_PORT_ONE);
+        return Integer.valueOf(property);
+    }
+
+    private Integer getPortTwo() {
+        String property = System.getProperty(EsConstants.ES_PORT_TWO);
+        return Integer.valueOf(property);
+    }
+
+    private String getScheme() {
+        return System.getProperty(EsConstants.ES_SCHEME);
+    }
+
+    protected String getIndex() {
+        return System.getProperty(EsConstants.ES_INDEX);
     }
 }

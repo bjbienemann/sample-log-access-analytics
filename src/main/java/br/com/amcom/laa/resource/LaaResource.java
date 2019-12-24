@@ -1,6 +1,7 @@
 package br.com.amcom.laa.resource;
 
 import br.com.amcom.laa.domain.Access;
+import br.com.amcom.laa.domain.Minute;
 import br.com.amcom.laa.exception.ResponseException;
 import br.com.amcom.laa.service.MetricsService;
 
@@ -72,7 +73,7 @@ public class LaaResource {
     public Response getMinuteMoreAccess() {
         MetricsService service = new MetricsService();
         try {
-            List<Access> accessList = service.getMinuteMoreAccess();
+            List<Minute> accessList = service.getMinuteMoreAccess();
             return Response.ok().entity(accessList).build();
         } catch (ResponseException e) {
             return e.getResponse();

@@ -20,7 +20,7 @@ public class HealthService extends EsConnection {
     private static final Logger LOGGER = LogManager.getLogger(HealthService.class);
 
     public ClusterHealthResponse getHealth() {
-        ClusterHealthRequest request = new ClusterHealthRequest(INDEX);
+        ClusterHealthRequest request = new ClusterHealthRequest(getIndex());
         request.timeout(TimeValue.timeValueSeconds(DURATION));
         request.waitForYellowStatus();
         try {
@@ -35,16 +35,16 @@ public class HealthService extends EsConnection {
 
     public void createIndex() {
         try {
-            GetIndexRequest getIndexRequest = new GetIndexRequest(INDEX);
+            GetIndexRequest getIndexRequest = new GetIndexRequest(getIndex());
             boolean exists = openConnection().indices().exists(getIndexRequest, RequestOptions.DEFAULT);
 
             if (!exists) {
-                LOGGER.info("Creating index ".concat(INDEX));
-                CreateIndexRequest createIndexRequest = new CreateIndexRequest(INDEX);
+                LOGGER.info("Creating index ".concat(getIndex()));
+                CreateIndexRequest createIndexRequest = new CreateIndexRequest(getIndex());
                 createIndexRequest.mapping(getPropertiesMapping());
 
                 openConnection().indices().create(createIndexRequest, RequestOptions.DEFAULT);
-                LOGGER.info("Created index ".concat(INDEX));
+                LOGGER.info("Created index ".concat(getIndex()));
             }
         } catch (IOException e) {
             LOGGER.error(e.getLocalizedMessage(), e);

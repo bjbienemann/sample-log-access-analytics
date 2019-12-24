@@ -2,6 +2,7 @@ package br.com.amcom.laa.service;
 
 import br.com.amcom.laa.connection.EsConnection;
 import br.com.amcom.laa.domain.Access;
+import br.com.amcom.laa.domain.Minute;
 import br.com.amcom.laa.exception.ElasticSearchClientException;
 import br.com.amcom.laa.exception.InvalidDateException;
 import br.com.amcom.laa.exception.NoRecordsFoundExcepetion;
@@ -57,7 +58,7 @@ public class MetricsService extends EsConnection {
         searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(INDEX);
+        searchRequest.indices(getIndex());
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -87,7 +88,7 @@ public class MetricsService extends EsConnection {
         searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(INDEX);
+        searchRequest.indices(getIndex());
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -116,7 +117,7 @@ public class MetricsService extends EsConnection {
         searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(INDEX);
+        searchRequest.indices(getIndex());
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -170,7 +171,7 @@ public class MetricsService extends EsConnection {
         searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(INDEX);
+        searchRequest.indices(getIndex());
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -208,7 +209,7 @@ public class MetricsService extends EsConnection {
                 .order(BucketOrder.aggregation(COUNT, asc));
     }
 
-    public List<Access> getMinuteMoreAccess() {
+    public List<Minute> getMinuteMoreAccess() {
         SearchResponse searchResponse = searchMinuteMoreAccess();
 
         return aggsHistogramToAccess(searchResponse);
@@ -224,7 +225,7 @@ public class MetricsService extends EsConnection {
         searchSourceBuilder.timeout(new TimeValue(DURATION, TimeUnit.SECONDS));
 
         SearchRequest searchRequest = new SearchRequest();
-        searchRequest.indices(INDEX);
+        searchRequest.indices(getIndex());
         searchRequest.source(searchSourceBuilder);
 
         try {
@@ -237,7 +238,7 @@ public class MetricsService extends EsConnection {
         }
     }
 
-    private List<Access> aggsHistogramToAccess(SearchResponse searchResponse){
+    private List<Minute> aggsHistogramToAccess(SearchResponse searchResponse){
         if(Objects.isNull(searchResponse) || Objects.isNull(searchResponse.getAggregations())) {
             throw new NoRecordsFoundExcepetion();
         }
@@ -249,13 +250,12 @@ public class MetricsService extends EsConnection {
         return aggs.getBuckets().stream().map(this::histogramToAccess).collect(Collectors.toList());
     }
 
-    private Access histogramToAccess(Histogram.Bucket bucket) {
-        return new Access(bucket.getKeyAsString(), bucket.getDocCount());
+    private Minute histogramToAccess(Histogram.Bucket bucket) {
+        return new Minute(bucket.getKeyAsString(), bucket.getDocCount());
     }
 
     private DateHistogramAggregationBuilder getDateHistogramAggregationBuilder() {
-        return AggregationBuilders
-                .dateHistogram(TOP_3_URLS)
+        return AggregationBuilders.dateHistogram(TOP_3_URLS)
                 .field(DATE_TIME)
                 .fixedInterval(DateHistogramInterval.MINUTE)
                 .format("yyyy-MM-dd:HH.mm")
